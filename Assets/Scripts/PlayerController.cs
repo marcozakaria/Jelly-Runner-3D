@@ -35,6 +35,13 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.CompareTag("death"))
+        {
+            GameManager.instance.PlayerDie();
+            myrigidbody.angularVelocity = Vector3.zero;
+            return;
+        }
+
         int i = 0;
         MeshDeformerInput.pressed = true;
         foreach (ContactPoint contact in collision.contacts)

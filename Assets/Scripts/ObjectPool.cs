@@ -74,7 +74,7 @@ public class ObjectPool : MonoBehaviour
         /*ParticleSystemRenderer particleSystemRenderer = objectToSpawn.GetComponent<ParticleSystemRenderer>();
         particleSystemRenderer.trailMaterial.color = color;
         particleSystemRenderer.material.color = color;*/
-        objectToSpawn.GetComponent<ParticleSystem>().startColor = color;       
+        //objectToSpawn.GetComponent<ParticleSystem>().startColor = color;       
 
         poolDictionary[tag].Enqueue(objectToSpawn);
     }
