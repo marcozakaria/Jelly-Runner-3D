@@ -35,9 +35,11 @@
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
+			#pragma multi_compile_fwdbase
 			
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
+			#include "AutoLight.cginc" // to recive shadows
 
 			struct appdata
 			{
@@ -54,6 +56,8 @@
 				// the normal in v2 will be populated in the vertex function
 				float3 worldNormal : Normal;
 				float3 viewDir : TEXCOORD1; //This is the direction from the current vertex towards the camera
+				
+				SHADOW_COORDS(2)
 			};
 
 			sampler2D _MainTex;
@@ -79,6 +83,8 @@
 				// specular reflection
 				o.viewDir =  WorldSpaceViewDir(v.vertex);
 
+				TRANSFER_SHADOW(o)
+
 				return o;
 			}
 			
@@ -88,8 +94,12 @@
 			{
 				float3 normal = normalize(i.worldNormal);
 				float NdotL = dot(_WorldSpaceLightPos0, normal);
+
+				 // to recive shadows
+				float shadow = SHADOW_ATTENUATION(i); //SHADOW_ATTENUATION is a macro that returns a value between 0 and 1
+
 				// smooth the edges between dark and light area
-				float lightIntensity = smoothstep(0, _BlendingMaxValue, NdotL);   // divide the ligtining into two bands light and dark
+				float lightIntensity = smoothstep(0, _BlendingMaxValue, NdotL * shadow);   // divide the ligtining into two bands light and dark
 				float4 light = lightIntensity * _LightColor0; //to change according to global directional light
 
 				float3 viewDir = normalize(i.viewDir);
