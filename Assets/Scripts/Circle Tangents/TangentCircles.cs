@@ -6,17 +6,29 @@ public class TangentCircles : CircleTangent
 {
     public GameObject circlePrefap;
 
-    private GameObject innerCircleGO, outerCircleGO, tangentCircleGO;
+    private GameObject innerCircleGO, outerCircleGO;
 
     public Vector4 innerCircle, outerCircle; // vector3 for position + loat for the radius of circle
-    public float tangentCircleRadius;
-    public float degree;
 
+    [Range(1,64)]
+    public int circleCount;
+    private Vector4[] tangentCircles;
+    private GameObject[] tangentObjects; 
+     
     private void Start()
     {
         innerCircleGO = (GameObject)Instantiate(circlePrefap);
         outerCircleGO = (GameObject)Instantiate(circlePrefap);
-        tangentCircleGO = (GameObject)Instantiate(circlePrefap);
+
+        tangentCircles = new Vector4[circleCount];
+        tangentObjects = new GameObject[circleCount];
+
+        for (int i = 0; i < circleCount; i++)
+        {
+            GameObject tangentInstance = (GameObject)Instantiate(circlePrefap);
+            tangentObjects[i] = tangentInstance;
+            tangentObjects[i].transform.parent = transform;
+        }
     }
 
     private void Update()
@@ -26,7 +38,12 @@ public class TangentCircles : CircleTangent
         outerCircleGO.transform.position = new Vector3(outerCircle.x, outerCircle.y, outerCircle.z);
         outerCircleGO.transform.localScale = new Vector3(outerCircle.w, outerCircle.w, outerCircle.w) * 2;// multiply by 2 to get diameter
 
-        tangentCircleGO.transform.position = GetRotatedTangent(degree, outerCircle.w) + outerCircleGO.transform.position;
-        tangentCircleGO.transform.localScale = new Vector3(tangentCircleRadius, tangentCircleRadius, tangentCircleRadius)*2;
+        for (int i = 0; i < circleCount; i++)
+        {
+            tangentCircles[i] = FindTangentCircle(outerCircle, innerCircle, (360f / circleCount) * i);
+            tangentObjects[i].transform.position = new Vector3(tangentCircles[i].x, tangentCircles[i].y, tangentCircles[i].z);
+            tangentObjects[i].transform.localScale = new Vector3(tangentCircles[i].w, tangentCircles[i].w, tangentCircles[i].w) * 2;
+
+        }
     }
 }
